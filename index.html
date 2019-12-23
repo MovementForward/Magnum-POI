@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Magnum POI</title>
+        <meta name="viewport" content="initial-scale=1.0">
+        <meta charset="utf-8">
+        <style>
+            #map {
+                height: 100%;
+            }
+            html, body {
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            #over_map {  
+                position: absolute;
+                top: 10px;
+                left: 10px;
+                z-index:999;
+                max-width: 300px;
+                background-color: #fff;
+                padding: 5px;
+                border: 1px solid #999;
+                text-align: center;
+                font-family: 'Roboto','sans-serif';
+                line-height: 30px;
+                padding-left: 10px;
+            }
+            /* Style the tab */
+            .tab {
+                overflow: hidden;
+                border: 1px solid #ccc;
+                background-color: #f1f1f1;
+            }
+
+            /* Style the buttons that are used to open the tab content */
+            .tab button {
+                background-color: inherit;
+                float: left;
+                border: none;
+                outline: none;
+                cursor: pointer;
+                padding: 14px 16px;
+                transition: 0.3s;
+            }
+
+            /* Change background color of buttons on hover */
+            .tab button:hover {
+                background-color: #ddd;
+            }
+
+            /* Create an active/current tablink class */
+            .tab button.active {
+                background-color: #ccc;
+            }
+
+            /* Style the tab content */
+            .tabcontent {
+                display: none;
+                padding: 6px 12px;
+                border: 1px solid #ccc;
+                border-top: none;
+            }
+            /* The Modal (background) */
+            .modal {
+                display: none; /* Hidden by default */
+                position: fixed; /* Stay in place */
+                z-index: 1; /* Sit on top */
+                left: 0;
+                top: 0;
+                width: 100%; /* Full width */
+                height: 100%; /* Full height */
+                overflow: auto; /* Enable scroll if needed */
+                background-color: rgb(0,0,0); /* Fallback color */
+                background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            }
+
+            /* Modal Content/Box */
+            .modal-content {
+                background-color: #fefefe;
+                margin: 15% auto; /* 15% from the top and centered */
+                padding: 20px;
+                border: 1px solid #888;
+                width: 80%; /* Could be more or less, depending on screen size */
+            }
+
+            /* The Close Button */
+            .close {
+                color: #aaa;
+                float: right;
+                font-size: 28px;
+                font-weight: bold;
+            }
+
+            .close:hover,
+            .close:focus {
+                color: black;
+                text-decoration: none;
+                cursor: pointer;
+            }
+            #myVideo {
+                position: fixed;
+                right: 0;
+                bottom: 0;
+                min-width: 100%;
+                min-height: 100%;
+            }
+            table {
+                font-family: arial, sans-serif;
+                border-collapse: collapse;
+                width: 100%;
+            }
+
+            td, th {
+                border: 1px solid #dddddd;
+                text-align: left;
+                padding: 8px;
+            }
+
+            tr:nth-child(even) {
+                background-color: #dddddd;
+            }
+        </style>
+    </head>
+    <body>
+        <video autoplay muted loop id="myVideo">
+            <source src="https://giant.gfycat.com/OilyIncredibleJanenschia.mp4" type="video/mp4">
+        </video>
+        <div id="map">
+        </div>
+        <div id="over_map">
+            <h2>Magnum POI</h2>
+            <div class="tab">
+                <button class="tablinks" onclick="openTab(event, 'step1')" id="defaultOpen">Step 1</button>
+                <button class="tablinks" onclick="openTab(event, 'step2')" id="step2btn" disabled>Step 2</button>
+                <button class="tablinks" onclick="openTab(event, 'step3')" id="step3btn" disabled>Step 3</button>
+              </div>
+            <!-- Tab content -->
+            <div id="step1" class="tabcontent">
+                <p>To get started, enter your Google Maps API key. It will only be used for this session and will not be stored or trasmitted to anyone but Google.</p>
+                API Key: <input type="text" id="apiKey" name="apiKey"><br>
+                <button type="button" onclick="completeStep1()">Next</button>
+            </div>
+            
+            <div id="step2" class="tabcontent">
+                <p>Select a point on the map and a radius to constrain your search.</p>
+                <a href="#" onclick="return setListenerBuffer();">Click here to pick a location on map</a><br />
+                <p id="coords"></p>
+                Radius (miles) <input type="number" id="radius" name="radius" min="100" max="50000" step="100"><br />
+                <button type="button" onclick="completeStep2()">Next</button>
+            </div>
+            
+            <div id="step3" class="tabcontent">
+                <p>What type of places are you looking for? Only 1 place type is allowed by Google Places API</p>
+                <select name="type" id="placesTypes" name="placesTypes"></select><br />
+                <button type="button" onclick="completeStep3()">Search</button>
+            </div>
+
+            <p>Source code on <a href="https://github.com/MovementForward/Magnum-POI">GitHub</a><br />
+            Maintained by <a href="https://www.movementforward.org">MovementForward</a></p>
+        <div>
+
+        <!-- The Modal -->
+        <div id="myModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+            <span class="close">&times;</span>
+            <table id="resultsTable">
+                <tr>
+                  <th>Name</th>
+                  <th>Phone</th>
+                  <th>Website</th>
+                  <th>Address</th>
+                </tr>
+              </table>
+            </div>
+        </div>
+    </body>
+  <script>
+
+        function startStep1() {
+            document.getElementById("defaultOpen").click();
+        }
+
+        function completeStep1() {
+            apiKey = document.getElementById('apiKey').value;
+            loadMaps(apiKey, initMap, document.body);
+            startStep2();
+        };
+
+        function startStep2(){
+            document.getElementById("step2btn").disabled = false;
+            document.getElementById("step2btn").click();
+            RemoveCircleBuffer();
+        }
+
+        function completeStep2(){
+            createCircle();
+            map.setZoom(10);
+            map.setCenter({lat: selectedCoords.lat(), lng: selectedCoords.lng()});
+            document.getElementById("step3btn").disabled = false;
+            document.getElementById("step3btn").click();
+            startStep3();
+        }
+
+        function startStep3() {
+            getTypes();
+        }
+
+        function completeStep3() {
+            selectedType = select.options[select.selectedIndex].value;
+            getNearbyPlaces();
+            modal.style.display = "block";
+        }
+
+        function createCircle() {
+            rad = document.getElementById('radius').value
+            rad *= 1609.34; // convert to meters
+
+            if (buffer_circle != null) {
+                buffer_circle.setMap(null);
+            }
+
+            buffer_circle = new google.maps.Circle({
+                center: selectedCoords,
+                radius: rad,
+                strokeColor: "#2d539c",
+                strokeOpacity: 1.0,
+                strokeWeight: 2,
+                fillColor: "#2d539c",
+                fillOpacity: 0.5,
+                map: map
+            });
+            circleClusterremove.push(buffer_circle);
+        }
+
+        function RemoveCircleBuffer() {
+            try {
+                for (var i = 0; i < circleClusterremove.length; i++) {
+                    circleClusterremove[i].setMap(null);
+                }
+                circleClusterremove = [];
+            }
+            catch (Error) {
+            }
+        }
+
+        var apiKey;
+        var map;
+        var rad;
+        var circleClusterremove = [];
+        var buffer_circle = null;
+        var select = document.getElementById('placesTypes');
+        var selectedCoords;
+        var selectecType;
+        var resultsTable = document.getElementById("resultsTable");
+
+        function getPlace(results, i) {
+            console.log("Calling " + results[i].place_id + " " + Date.now());
+            let request = {
+            placeId: results[i].place_id,
+            fields: ['name', 'formatted_address', 'geometry', 'rating',
+                'website', 'formatted_phone_number']
+            };
+
+            /* Only fetch the details of a place when the user clicks on a marker.
+            * If we fetch the details for all place results as soon as we get
+            * the search response, we will hit API rate limits. */
+            service.getDetails(request, (placeResult, status) => {
+                console.log(status + " " + results[i].place_id + " " + Date.now());
+                var row = resultsTable.insertRow(-1);
+                var nameCell = row.insertCell(0);
+                var phoneCell = row.insertCell(1);
+                var websiteCell = row.insertCell(2);
+                var addressCell = row.insertCell(3);
+                // Add some text to the new cells:
+                nameCell.innerHTML = placeResult.name;
+                addressCell.innerHTML = placeResult.formatted_address;
+                if (placeResult.formatted_phone_number) {
+                    phoneCell.innerHTML = placeResult.formatted_phone_number;
+                }
+                if (placeResult.website) {
+                    websiteCell.innerHTML = "<a href='" + placeResult.website + "' target='_blank'>" + placeResult.website + " </a>";
+                }
+
+            });
+
+            if (i < results.length - 1 ) {
+                setTimeout(function(){getPlace(results, i + 1)}, 300);
+            }
+        }
+
+        function getNearbyPlaces() {
+            let request = {
+            location: { 'lat': selectedCoords.lat(), 'lng': selectedCoords.lng()},
+            radius: rad,
+            type: selectedType,
+            };
+
+            service = new google.maps.places.PlacesService(map);
+            service.nearbySearch(request, nearbyCallback);
+        }
+
+        // Handle the results (up to 20) of the Nearby Search
+        function nearbyCallback(results, status) {
+            if (status == google.maps.places.PlacesServiceStatus.OK) {
+                console.log(results);
+                getPlace(results, 0);
+            }
+        }
+
+        function getTypes() {
+            var Httpreq = new XMLHttpRequest(); // a new request
+            Httpreq.open("GET", 'https://movementforward.github.io/Magnum-POI/assets/resources/typeList.json' ,false);
+            Httpreq.send(null);
+            var typesList = JSON.parse(Httpreq.responseText);  
+            for (var i = 0; i<= typesList.length - 1; i++){
+                var opt = document.createElement('option');
+                opt.value = typesList[i].typeId;
+                opt.innerHTML = typesList[i].displayName;
+                select.appendChild(opt); 
+            }        
+        }
+
+        var initMap = function(){
+            console.log("called");
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: {lat: 41.850033, lng: -87.6500523},
+                zoom: 5
+            });
+        }
+        var loadMaps = function(apiKey, implementationCode, location){
+            var scriptTag = document.createElement('script');
+            scriptTag.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=initMap`;
+            location.appendChild(scriptTag);
+        };
+
+        function openTab(evt, stepName) {
+            // Declare all variables
+            var i, tabcontent, tablinks;
+            // Get all elements with class="tabcontent" and hide them
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+
+            // Get all elements with class="tablinks" and remove the class "active"
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+
+            // Show the current tab, and add an "active" class to the button that opened the tab
+            document.getElementById(stepName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+
+        function setListenerBuffer() {
+            var element = document.getElementById("coords");
+
+            map.setOptions({ draggableCursor: 'crosshair' });
+            google.maps.event.addListenerOnce(map, "click", function (event) {
+                map.setOptions({ draggableCursor: '' });
+                element.innerHTML = "Lat: " + event.latLng.lat() + " <br /> Lon:" + event.latLng.lng();
+                selectedCoords = event.latLng;
+            });
+            return false;
+        }
+
+        var modal = document.getElementById("myModal");
+
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close")[0];
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function() {
+        modal.style.display = "none";
+        }
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+        }
+
+
+        startStep1();
+  </script>
+</html>
