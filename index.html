@@ -283,7 +283,6 @@
                 if (placeResult.website) {
                     websiteCell.innerHTML = "<a href='" + placeResult.website + "' target='_blank'>" + placeResult.website + " </a>";
                 }
-
             });
 
             if (i < results.length - 1 ) {
@@ -295,7 +294,8 @@
             let request = {
             location: { 'lat': selectedCoords.lat(), 'lng': selectedCoords.lng()},
             radius: rad,
-            type: selectedType,
+            rankby: prominence,
+            type: selectedType
             };
 
             service = new google.maps.places.PlacesService(map);
@@ -362,7 +362,7 @@
             map.setOptions({ draggableCursor: 'crosshair' });
             google.maps.event.addListenerOnce(map, "click", function (event) {
                 map.setOptions({ draggableCursor: '' });
-                element.innerHTML = "Lat: " + event.latLng.lat() + " <br /> Lon:" + event.latLng.lng();
+                element.innerHTML = "Lat: " + event.latLng.lat() + " <br /> Lon: " + event.latLng.lng();
                 selectedCoords = event.latLng;
             });
             return false;
