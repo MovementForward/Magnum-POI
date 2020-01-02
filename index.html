@@ -294,7 +294,7 @@
             let request = {
             location: { 'lat': selectedCoords.lat(), 'lng': selectedCoords.lng()},
             radius: rad,
-            rankby: 'prominence',
+            rankby: google.maps.places.RankBy.PROMINENCE,
             type: selectedType
             };
 
