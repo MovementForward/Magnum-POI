@@ -167,12 +167,14 @@
             <div class="modal-content">
             <span class="close">&times;</span>
             <table id="resultsTable">
-                <tr>
+                <thead>
                   <th>Name</th>
                   <th>Phone</th>
                   <th>Website</th>
                   <th>Address</th>
-                </tr>
+                </thead>
+                <tbody>
+                </tbody>
               </table>
             </div>
         </div>
@@ -209,6 +211,8 @@
         }
 
         function completeStep3() {
+            var bodyRef = document.getElementById('resultsTable').getElementsByTagName('tbody')[0]; 
+            bodyRef.innerHTML = '';
             selectedType = select.options[select.selectedIndex].value;
             getNearbyPlaces();
             modal.style.display = "block";
@@ -254,7 +258,7 @@
         var select = document.getElementById('placesTypes');
         var selectedCoords;
         var selectecType;
-        var resultsTable = document.getElementById("resultsTable");
+        var resultsTable = document.getElementById('resultsTable').getElementsByTagName('tbody')[0];
 
         function getPlace(results, i) {
             console.log("Calling " + results[i].place_id + " " + Date.now());
