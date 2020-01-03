@@ -308,6 +308,7 @@
                 request,
                 function(results, status, pagination) {
                     if (status !== 'OK') return;
+                    console.log(`pagination ${pagination}`);
                     console.log(results);
                     getPlace(results, 0);
                     getNextPage = pagination.hasNextPage && function() {
