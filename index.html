@@ -307,12 +307,12 @@
             service.nearbySearch(
                 request,
                 function(results, status, pagination) {
+                    console.log(status);
+                    console.log(JSON.stringify(pagination));
                     if (status !== 'OK') return;
                     getPlace(results, 0);
                     getNextPage = pagination.hasNextPage && function() {
-                    console.log(JSON.stringify(pagination));
-                    console.log('calling next page?');
-                    pagination.nextPage();
+                         pagination.nextPage();
                     };
                 }
             );
