@@ -261,7 +261,6 @@
         var resultsTable = document.getElementById('resultsTable').getElementsByTagName('tbody')[0];
 
         function getPlace(results, i) {
-            console.log("Calling " + results[i].place_id + " " + Date.now());
             let request = {
             placeId: results[i].place_id,
             fields: ['name', 'formatted_address', 'geometry', 'rating',
@@ -272,7 +271,6 @@
             * If we fetch the details for all place results as soon as we get
             * the search response, we will hit API rate limits. */
             service.getDetails(request, (placeResult, status) => {
-                console.log(status + " " + results[i].place_id + " " + Date.now());
                 var row = resultsTable.insertRow(-1);
                 var nameCell = row.insertCell(0);
                 var phoneCell = row.insertCell(1);
@@ -305,7 +303,13 @@
             service = new google.maps.places.PlacesService(map);
             var getNextPage = null;
 
-            if (getNextPage) getNextPage();
+            if (getNextPage) 
+            {
+                getNextPage()
+            } 
+            else {
+                console.log('no more');
+            };
 
             service.nearbySearch(
                 request,
