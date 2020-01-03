@@ -304,6 +304,9 @@
 
             service = new google.maps.places.PlacesService(map);
             var getNextPage = null;
+
+            if (getNextPage) getNextPage();
+
             service.nearbySearch(
                 request,
                 function(results, status, pagination) {
@@ -311,9 +314,8 @@
                     console.log(JSON.stringify(pagination));
                     if (status !== 'OK') return;
                     getPlace(results, 0);
-                    getNextPage = pagination.hasNextPage && function() {
-                         pagination.nextPage();
-                    };
+                    getNextPage = pagination.hasNextPage && 
+                    setTimeout(function(){pagination.nextPage();}, 10000);
                 }
             );
         }
