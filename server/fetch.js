@@ -5,10 +5,10 @@ const fs = require('fs');
 const apiKey = '';
 
 // const latitude = readline.question("Latitude?");
-const latitude = "39.80105340458913"
+const latitude = "33.9563647827729"
 
 // const longitude = readline.question("Longitude?");
-const longitude = "-86.16140483906247"
+const longitude = "-83.37612931462792"
 
 // const radius = readline.question("Radius?");
 const radius = "10";
@@ -43,7 +43,7 @@ function getPlaces(url) {
                 nextPage(data.next_page_token);
             } else {
                 console.log(places.length);
-                fs.writeFile(`${types[3]}.txt`, JSON.stringify(places), (err) => {
+                fs.writeFile(`${types[0]}.txt`, JSON.stringify(places), (err) => {
                     if (err) throw err;
                     console.log('Places saved!');
                 });
@@ -53,7 +53,7 @@ function getPlaces(url) {
 }
 
 function init() {
-    const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=${rad}&rankby=prominence&type=${types[3]}&key=${apiKey}`
+    const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=${rad}&rankby=prominence&type=${types[0]}&key=${apiKey}`
     getPlaces(url);
 }
 
