@@ -5,7 +5,7 @@ Readme Updated: Jan 5th, 2020
 
 A map based Point of Interest geosearch powered by Google's Places API. 
 
-![Tom Selleck Magnum PI][tom-selleck]
+![Magnum POI GIF][project-gif]
 
 # Inspiration
 
@@ -31,4 +31,4 @@ To use Magnum POI, you will need a Google Maps API Key that is scoped for Google
 
 To learn more about our technology projects and initiatives, check out our [tech blog](https://tech.movementforward.org).
 
-[tom-selleck]: https://github.com/MovementForward/Magnum-POI/raw/master/assets/images/magnum_pi_selleck.jpg "Tom Selleck Magnum PI"
+[project-gif]: https://tech.movementforward.org/Magnum-POI/assets/images/magnumpoi.gif "Magnum POI GIF"
