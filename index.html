@@ -217,7 +217,7 @@
 
         function getTypes() {
             var Httpreq = new XMLHttpRequest(); // a new request
-            Httpreq.open("GET", 'https://movementforward.github.io/Magnum-POI/assets/resources/typeList.json' ,false);
+            Httpreq.open("GET", 'https://tech.movementforward.org/Magnum-POI/assets/resources/typeList.json' ,false);
             Httpreq.send(null);
             var typesList = JSON.parse(Httpreq.responseText);  
             for (var i = 0; i<= typesList.length - 1; i++){
